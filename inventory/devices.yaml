@@ -1,0 +1,18 @@
+devices:
+  - name: Router1
+    ip: 192.168.1.1
+    username: admin
+    password: admin
+    device_type: cisco_ios
+
+  - name: Switch1
+    ip: 192.168.1.2
+    username: admin
+    password: admin
+    device_type: cisco_ios
+
+  - name: LinuxServer
+    ip: 192.168.1.10
+    username: ubuntu
+    password: ubuntu
+    device_type: linux
