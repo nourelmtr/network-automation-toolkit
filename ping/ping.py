@@ -1,4 +1,5 @@
 import subprocess
+import re
 
 
 def ping_device(ip):
@@ -12,7 +13,20 @@ def ping_device(ip):
         text=True
     )
 
+    latency = None
+
+    # Search for the latency in the ping output
+    match = re.search(
+        r"time[=<]?\s*(\d+)\s*ms",
+        result.stdout,
+        re.IGNORECASE
+    )
+
+    if match:
+        latency = match.group(1) + " ms"
+
     return {
         "ip": ip,
-        "reachable": result.returncode == 0
+        "reachable": result.returncode == 0,
+        "latency": latency
     }
