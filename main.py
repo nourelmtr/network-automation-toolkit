@@ -1,135 +1,37 @@
-from inventory.loader import load_inventory, validate_inventory
-from ping.ping import ping_device
-from reports.csv_report import generate_csv_report
-from ssh.ssh_client import (
-    connect_to_device,
-    execute_command,
-    disconnect_device,
+from cli.arguments import parse_arguments
+from services.network_service import (
+    run_all,
+    run_ping,
+    run_ssh,
+    run_report,
 )
-from backup.backup_manager import save_backup
-from backup.backup_service import backup_device
-from utils.logger import setup_logger
 
 
 def main():
 
-    # Initialize the logger
-    logger = setup_logger()
-    logger.info("Starting Network Automation Toolkit")
+    args = parse_arguments()
 
-    inventory = load_inventory("inventory/devices.yaml")
+    if args.ping:
 
-    if not inventory:
-        logger.error("Failed to load inventory.")
-        return
+        run_ping()
 
-    logger.info("Inventory loaded successfully.")
+    elif args.backup:
 
-    try:
-        validate_inventory(inventory)
+        run_ssh()
 
-        # Store all results for the CSV report
-        report_data = []
+    elif args.report:
 
-        print("===== Network Inventory =====\n")
+        report_data = run_ping()
+        run_report(report_data)
 
-        for device in inventory["devices"]:
+    elif args.all:
 
-            # ---------------------------------
-            # Ping the device
-            # ---------------------------------
-            ping_result = ping_device(device["ip"])
+        run_all()
 
-            print(f"Name    : {device['name']}")
-            print(f"IP      : {device['ip']}")
-            print(f"Type    : {device['device_type']}")
-            print(
-                f"Status  : {'Reachable' if ping_result['reachable'] else 'Unreachable'}"
-            )
+    else:
 
-            if ping_result["latency"]:
-                print(f"Latency : {ping_result['latency']}")
-
-            # Log the ping result
-            logger.info(
-                f"{device['name']} - "
-                f"{'Reachable' if ping_result['reachable'] else 'Unreachable'}"
-            )
-
-            # ---------------------------------
-            # SSH Connection
-            # ---------------------------------
-            connection = connect_to_device(device)
-
-            if connection:
-
-                print("\nSSH Connection : Successful")
-                logger.info(f"SSH connection established with {device['name']}")
-
-                print("\nExecuting command: show version\n")
-
-                output = execute_command(connection, "show version")
-
-                if output:
-                    print(output)
-                    logger.info(f"'show version' executed on {device['name']}")
-
-                # Backup configuration
-                backup_device(connection, device)
-                logger.info(f"Backup completed for {device['name']}")
-
-                # Disconnect
-                disconnect_device(connection)
-                logger.info(f"Disconnected from {device['name']}")
-
-            else:
-
-                print("\nSSH Connection : Failed")
-                logger.error(f"SSH connection failed for {device['name']}")
-
-                # Temporary backup until GNS3 migration
-                sample_configuration = f"""
-hostname {device['name']}
-
-interface GigabitEthernet0/0
- ip address {device['ip']} 255.255.255.0
- no shutdown
-
-ip ssh version 2
-
-username admin privilege 15 secret admin123
-"""
-
-                save_backup(device["name"], sample_configuration)
-                logger.info(f"Sample backup created for {device['name']}")
-
-            print("-" * 40)
-
-            # ---------------------------------
-            # Save data for CSV report
-            # ---------------------------------
-            report_data.append(
-                {
-                    "name": device["name"],
-                    "ip": device["ip"],
-                    "device_type": device["device_type"],
-                    "reachable": ping_result["reachable"],
-                    "latency": ping_result["latency"],
-                }
-            )
-
-        # ---------------------------------
-        # Generate CSV Report
-        # ---------------------------------
-        generate_csv_report(report_data)
-
-        logger.info("CSV report generated successfully.")
-
-        print("\nCSV report generated successfully!")
-
-    except ValueError as error:
-        logger.error(error)
-        print(f"Inventory Error: {error}")
+        # Default behavior
+        run_all()
 
 
 if __name__ == "__main__":
