@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Network Automation Toolkit</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- ================= Sidebar ================= -->
+
+    <aside class="sidebar">
+
+        <h2>NAT</h2>
+
+        <ul>
+
+            <li class="active"> Dashboard</li>
+            <li> Devices</li>
+            <li> Backups</li>
+            <li> Reports</li>
+            <li> API</li>
+            <li> Settings</li>
+
+        </ul>
+
+    </aside>
+
+    <!-- ================= Main ================= -->
+
+    <main class="content">
+
+        <div class="topbar">
+
+            <div>
+
+                <h1>Network Automation Toolkit</h1>
+
+                <p id="lastUpdate">
+                    Last update: --
+                </p>
+
+            </div>
+
+            <button id="loadDevices">
+
+                Refresh Devices
+
+            </button>
+
+        </div>
+
+        <!-- ================= Statistics ================= -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h2 id="deviceCount">0</h2>
+
+                <p>Total Devices</p>
+
+            </div>
+
+            <div class="card online-card">
+
+                <h2 id="onlineCount">0</h2>
+
+                <p>Online</p>
+
+            </div>
+
+            <div class="card offline-card">
+
+                <h2 id="offlineCount">0</h2>
+
+                <p>Offline</p>
+
+            </div>
+
+            <div class="card latency-card">
+
+                <h2 id="avgLatency">--</h2>
+
+                <p>Average Latency</p>
+
+            </div>
+
+        </div>
+
+        <!-- ================= Search ================= -->
+
+        <input
+            type="text"
+            id="search"
+            placeholder="Search hostname, IP address or device type..."
+        >
+
+        <!-- ================= Charts ================= -->
+
+        <div class="charts">
+
+            <div class="chart-card">
+
+                <h3>Device Status</h3>
+
+                <canvas id="statusChart"></canvas>
+
+            </div>
+
+            <div class="chart-card">
+
+                <h3>Latency</h3>
+
+                <canvas id="latencyChart"></canvas>
+
+            </div>
+
+        </div>
+
+        <!-- ================= Devices ================= -->
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th>Name</th>
+                <th>IP Address</th>
+                <th>Device Type</th>
+                <th>Status</th>
+                <th>Latency</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody id="deviceTable">
+
+            </tbody>
+
+        </table>
+
+        <footer>
+
+            <p>
+
+                Network Automation Toolkit • Version 1.0
+
+            </p>
+
+        </footer>
+
+    </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
